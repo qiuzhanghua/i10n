@@ -7,11 +7,15 @@ import (
 	"strings"
 )
 
-var _data = map[language.Tag]map[string]string{language.English: {}}
+var (
+	_data map[language.Tag]map[string]string
+	_tag  language.Tag
+	_p    *message.Printer
+)
 
-var _tag = language.English
-
-var _p = message.NewPrinter(_tag)
+func init() {
+	Reset()
+}
 
 // T Get default tag resource/translated
 func T(key string, arg ...interface{}) string {
@@ -102,10 +106,17 @@ func Parse(name string) (tag language.Tag, fileType string, err error) {
 	return tag, fileType, nil
 }
 
-func AddProperties(tag language.Tag, content []byte) {
-
+func AddMap(tag language.Tag, m map[string]string) {
+	if _, ok := _data[tag]; !ok {
+		_data[tag] = map[string]string{}
+	}
+	for key, val := range m {
+		_data[tag][key] = val
+	}
 }
 
-func LoadProperties(filename string) {
-
+func Reset() {
+	_data = map[language.Tag]map[string]string{language.English: {}}
+	_tag = language.English
+	_p = message.NewPrinter(_tag)
 }

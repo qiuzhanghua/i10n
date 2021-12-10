@@ -1,6 +1,7 @@
 package i10n
 
 import (
+	"fmt"
 	"golang.org/x/text/language"
 	"testing"
 )
@@ -58,17 +59,35 @@ func TestTT(t *testing.T) {
 func TestT(t *testing.T) {
 	_ = SetDefaultLang("zh-CN")
 	zh, _ := language.Parse("zh")
-	AddResource(language.English, "Hello", "world")
-	AddResource(zh, "Hello", "世界")
-	expected := "世界"
-	actual := T("Hello")
+	AddResource(language.English, "Hello", "world, %d")
+	AddResource(zh, "Hello", "世界, %d")
+	expected := "世界, 9"
+	actual := T("Hello", 9)
 	if expected != actual {
 		t.Errorf("Test failed, expected: %v, got: '%v'", expected, actual)
 	}
-	expected = ""
-	actual = T("Hello2")
+	expected = "world, 8"
+	actual = E("Hello", language.English, 8)
+	fmt.Println(actual)
 	if expected != actual {
 		t.Errorf("Test failed, expected: %v, got: '%v'", expected, actual)
+	}
+}
+
+func TestParse(t *testing.T) {
+
+	tag, fileType, err := Parse("app_zh-CN.properties")
+	// language.SimplifiedChinese == zh-Hans
+	if language.Chinese != tag.Parent() {
+		t.Errorf("Test failed, expected: %v, got: '%v'", language.SimplifiedChinese, tag)
+	}
+
+	if "properties" != fileType {
+		t.Errorf("Test failed, expected: %v, got: '%v'", "properties", fileType)
+	}
+
+	if err != nil {
+		t.Errorf("Test failed, expected: %v, got: '%v'", nil, err)
 	}
 
 }

@@ -1,14 +1,27 @@
 package i10n
 
-import "golang.org/x/text/language"
+import (
+	"errors"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"strings"
+)
 
 var _data = map[language.Tag]map[string]string{language.English: {}}
 
 var _tag = language.English
 
+var _p = message.NewPrinter(_tag)
+
 // T Get default tag resource/translated
-func T(key string) string {
-	return TT(key, _tag)
+func T(key string, arg ...interface{}) string {
+	return _p.Sprintf(TT(key, _tag), arg...)
+}
+
+// E Expend resource/translated of tag
+func E(key string, tag language.Tag, arg ...interface{}) string {
+	p := message.NewPrinter(tag)
+	return p.Sprintf(TT(key, tag), arg...)
 }
 
 // SetDefaultLang set default lang
@@ -17,12 +30,13 @@ func SetDefaultLang(lang string) error {
 	if err != nil {
 		return err
 	}
-	_tag = tag
+	SetDefaultTag(tag)
 	return nil
 }
 
 func SetDefaultTag(tag language.Tag) {
 	_tag = tag
+	_p = message.NewPrinter(_tag)
 }
 
 func GetDefaultTag() language.Tag {
@@ -63,4 +77,35 @@ func TT(key string, tag language.Tag) string {
 		return val
 	}
 	return ""
+}
+
+/*
+	Properties file handle
+*/
+func Parse(name string) (tag language.Tag, fileType string, err error) {
+	dotIndex := strings.LastIndex(name, ".")
+	if dotIndex <= 0 {
+		return tag, fileType, errors.New("name error, should be xxx_zh-CN.properties or XXX.en-US.yaml etc")
+	}
+	fileType = name[dotIndex+1:]
+	name = name[:dotIndex]
+	dotIndex = strings.LastIndex(name, "_")
+	if dotIndex <= 0 {
+		dotIndex = strings.LastIndex(name, ".")
+	}
+	if dotIndex <= 0 {
+		tag = language.English
+	} else {
+		tag, err = language.Parse(name[dotIndex+1:])
+		return tag, fileType, err
+	}
+	return tag, fileType, nil
+}
+
+func AddProperties(tag language.Tag, content []byte) {
+
+}
+
+func LoadProperties(filename string) {
+
 }

@@ -76,14 +76,10 @@ func TestT(t *testing.T) {
 
 func TestParse(t *testing.T) {
 
-	tag, fileType, err := Parse("app_zh-CN.properties")
+	tag, err := ParseTag("app_zh-CN.properties")
 	// language.SimplifiedChinese == zh-Hans
 	if language.Chinese != tag.Parent() {
 		t.Errorf("Test failed, expected: %v, got: '%v'", language.SimplifiedChinese, tag)
-	}
-
-	if "properties" != fileType {
-		t.Errorf("Test failed, expected: %v, got: '%v'", "properties", fileType)
 	}
 
 	if err != nil {

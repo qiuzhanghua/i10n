@@ -83,30 +83,30 @@ func TT(key string, tag language.Tag) string {
 	return ""
 }
 
-/*
-	Properties file handle
-*/
-func Parse(name string) (tag language.Tag, fileType string, err error) {
+func ParseTagWithDefault(name string) (tag language.Tag) {
+	tag, _ = ParseTag(name)
+	return tag
+}
+
+func ParseTag(name string) (tag language.Tag, err error) {
+	tag = language.English
 	dotIndex := strings.LastIndex(name, ".")
 	if dotIndex <= 0 {
-		return tag, fileType, errors.New("name error, should be xxx_zh-CN.properties or XXX.en-US.yaml etc")
+		return tag, errors.New("name error, should be xxx_zh-CN.properties or XXX.en-US.yaml etc")
 	}
-	fileType = name[dotIndex+1:]
 	name = name[:dotIndex]
 	dotIndex = strings.LastIndex(name, "_")
 	if dotIndex <= 0 {
 		dotIndex = strings.LastIndex(name, ".")
 	}
-	if dotIndex <= 0 {
-		tag = language.English
-	} else {
+	if dotIndex > 0 {
 		tag, err = language.Parse(name[dotIndex+1:])
-		return tag, fileType, err
+		return tag, err
 	}
-	return tag, fileType, nil
+	return tag, nil
 }
 
-func AddMap(tag language.Tag, m map[string]string) {
+func AddTagMap(tag language.Tag, m map[string]string) {
 	if _, ok := _data[tag]; !ok {
 		_data[tag] = map[string]string{}
 	}

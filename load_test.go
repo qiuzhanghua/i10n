@@ -87,3 +87,35 @@ func TestParse(t *testing.T) {
 	}
 
 }
+
+func TestNearest(t *testing.T) {
+	var locale, actual, expected string
+	var languages []string
+	locale = "zh-CN"
+	languages = []string{"zh-Hans", "zh"}
+	actual = Nearest(locale, languages)
+	expected = "zh"
+	// language.SimplifiedChinese == zh-Hans
+	if actual != expected {
+		t.Errorf("Test failed, expected: %v, got: '%v'", expected, actual)
+	}
+
+	locale = "zh"
+	languages = []string{"zh-Hans", "zh-CN"}
+	actual = Nearest(locale, languages)
+	expected = "en"
+	// language.SimplifiedChinese == zh-Hans
+	if actual != expected {
+		t.Errorf("Test failed, expected: %v, got: '%v'", expected, actual)
+	}
+
+	locale = "zh"
+	languages = []string{"DE", "en-US"}
+	actual = Nearest(locale, languages)
+	expected = "en"
+	// language.SimplifiedChinese == zh-Hans
+	if actual != expected {
+		t.Errorf("Test failed, expected: %v, got: '%v'", expected, actual)
+	}
+
+}

@@ -120,3 +120,19 @@ func Reset() {
 	_tag = language.English
 	_p = message.NewPrinter(_tag)
 }
+
+//Nearest
+// suppose locale is longest, languages should be less
+func Nearest(locale string, languages []string) string {
+	for i := range languages {
+		if languages[i] == locale {
+			return locale
+		}
+	}
+	for i := range languages {
+		if strings.HasPrefix(locale, languages[i]) {
+			return languages[i]
+		}
+	}
+	return "en"
+}
